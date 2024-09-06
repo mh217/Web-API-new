@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Uvod.Model;
+using Uvod.Service;
+
+
 
 namespace UvodWEBAPI.Controllers
 {
@@ -9,195 +13,73 @@ namespace UvodWEBAPI.Controllers
     public class AnimalController : ControllerBase
     {
 
-        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
+        
         private static List<Animal> _animals = new List<Animal>();
 
 
         [HttpPost]
         public IActionResult CreateAnimals(Animal animal)
         {
-            try
+            AnimalService service = new AnimalService();
+            var animalFound = service.CreateAnimalService(animal);
+            if (animalFound == false)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "INSERT INTO \"Animal\"  VALUES (@id, @name, @specise, @age, @dateOfBirth, @ownerId); ";
-                var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
-                command.Parameters.AddWithValue("@name", animal.Name);
-                command.Parameters.AddWithValue("@specise", animal.Specise);
-                command.Parameters.AddWithValue("@age", animal.Age);
-                command.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
-                command.Parameters.AddWithValue("@ownerId", NpgsqlTypes.NpgsqlDbType.Uuid, animal.OwnerId);
-
-                connection.Open();
-                var numberOfCommits = command.ExecuteNonQuery();
-                connection.Close();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not added");
-                }
-                return Ok("Successfully added");
-
+                return BadRequest("Not found");
             }
-            catch(Exception ex) 
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Animal Added");
         }
+
 
         [HttpDelete]
         [Route("{id}")]
         public IActionResult DeleteAnimalById(Guid id)
         {
-            try
+            AnimalService service = new AnimalService();
+            var animalFound = service.DeleteAnimalService(id);
+            if (animalFound == false)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "DELETE FROM \"Animal\" WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
-                
-                command.Parameters.AddWithValue("@id", id);
-                connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok("Successfully deleted");
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Animal Added");
         }
+
 
         [HttpPut]
         [Route("{id}")]
         public IActionResult UpdateAnimal(Guid id, [FromBody] AnimalUpdate animal)
         {
-            try
+            AnimalService service = new AnimalService();
+            var animalFound = service.UpdateAnimal(id, animal);
+            if (animalFound == false)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "UPDATE \"Animal\" SET \"Age\" = @age WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@age", animal.Age);
-                connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok("Successfully Updated");
+                return BadRequest("Not found");
             }
-            catch(Exception ex)
-            {
-                return BadRequest("Bad Request");
-            }
-
-
+            return Ok("Animal updated");
         }
 
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetAnimalById(Guid id)
         {
-            try
+            AnimalService service = new AnimalService();
+            var animal = service.GetAnimalByIdService(id);
+            if (animal is null)
             {
-                Animal animal = new Animal();
-                Owner owner = new Owner();
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\" WHERE a.\"Id\" = @id;";
-                
-
-                var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", id);
-                connection.Open();
-
-                using NpgsqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    reader.Read();
-                    animal.Id = Guid.Parse(reader["Id"].ToString());
-                    animal.Name = reader["Name"].ToString();
-                    animal.Specise = reader["Specise"].ToString();
-                    animal.Age = Int32.Parse(reader["Age"].ToString());
-                    animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : null; 
-                    animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
-                    owner.Id = animal.OwnerId;
-                    owner.FirstName = reader["FirstName"].ToString();
-                    owner.LastName = reader["LastName"].ToString();
-                    animal.Owner = owner;
-
-                }
-                else
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok(animal);
-                
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(animal);
         }
 
         [HttpGet]
-        
         public IActionResult GetAnimals()
         {
-            try
+            AnimalService service = new AnimalService();
+            var animals = service.GetAllAnimals();
+            if (animals is null)
             {
-                List<Animal>  animals = new List<Animal>();
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\";";
-
-
-                var command = new NpgsqlCommand(commandText, connection);
-                connection.Open();
-
-                using NpgsqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-
-                        Animal animal = new Animal();
-                        Owner owner = new Owner();
-                        animal.Id = Guid.Parse(reader["Id"].ToString());
-                        animal.Name = reader["Name"].ToString();
-                        animal.Specise = reader["Specise"].ToString();
-                        animal.Age = Int32.Parse(reader["Age"].ToString());
-                        animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : null;
-                        animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
-                        owner.Id = animal.OwnerId;
-                        owner.FirstName = reader["FirstName"].ToString();
-                        owner.LastName = reader["LastName"].ToString();
-                        animal.Owner = owner;
-
-                        animals.Add(animal);    
-                    }
-
-                }
-                else
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok(animals);
-
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(animals);
         }
 
 

@@ -1,4 +1,4 @@
-﻿namespace UvodWEBAPI
+﻿namespace Uvod.Model
 {
     public class Owner
     {

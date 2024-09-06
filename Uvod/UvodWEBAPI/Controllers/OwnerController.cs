@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Uvod.Model;
+using Uvod.Service;
+
+
 
 namespace UvodWEBAPI.Controllers
 {
@@ -8,130 +12,57 @@ namespace UvodWEBAPI.Controllers
     [ApiController]
     public class OwnerController : ControllerBase
     {
-        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
-
-
+        
         [HttpPost]
         public IActionResult CreateOwner(Owner owner)
         {
-            try
+            OwnerService service = new OwnerService(); 
+            var ownerFound = service.CreateOwnerService(owner);
+            if (ownerFound == false) 
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "INSERT INTO \"Owner\"  VALUES (@id, @firstName, @lastName);";
-                var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
-                command.Parameters.AddWithValue("@firstName", owner.FirstName);
-                command.Parameters.AddWithValue("@lastName", owner.LastName);
-
-                connection.Open();
-                var numberOfCommits = command.ExecuteNonQuery();
-                connection.Close();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not added");
-                }
-                return Ok("Successfully added");
-
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Owner Added");
+            
         }
 
         [HttpDelete]
         [Route("{id}")]
         public IActionResult DeleteOwnerById(Guid id)
         {
-            try
+            OwnerService service = new OwnerService();
+            var ownerFound = service.DeleteOwnerService(id);
+            if (ownerFound == false)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "DELETE FROM \"Owner\" WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", id);
-                connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok("Successfully deleted");
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok("Owner deleted");
         }
 
         [HttpPut]
         [Route("{id}")]
         public IActionResult UpdateOwner(Guid id, [FromBody] Owner owner)
         {
-            try
+            OwnerService service = new OwnerService();
+            var ownerFound = service.UpdateOwner(id, owner);
+            if (ownerFound == false)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "UPDATE \"Owner\" SET \"FirstName\" = @firstName  WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@firstName", owner.FirstName);
-                connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
-
-                if (numberOfCommits == 0)
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok("Successfully Updated");
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest("Bad Request");
-            }
-
-
+            return Ok("Owner updated");
         }
 
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetOwnerById(Guid id)
         {
-            try
+            OwnerService service = new OwnerService();
+            var foundOwner = service.GetOwnerByIdService(id);
+            if (foundOwner is null)
             {
-                Owner owner = new Owner();
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT * FROM \"Owner\" WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", id);
-                connection.Open();
-
-                using NpgsqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    reader.Read();
-                    owner.Id = Guid.Parse(reader["Id"].ToString());
-                    owner.FirstName = reader["FirstName"].ToString();
-                    owner.LastName = reader["LastName"].ToString();
-                    
-                }
-                else
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok(owner);
-
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(foundOwner);
         }
 
 
@@ -139,43 +70,13 @@ namespace UvodWEBAPI.Controllers
 
         public IActionResult GetOwners()
         {
-            try
+            OwnerService service = new OwnerService();
+            var foundOwners = service.GetOwnersService();
+            if (foundOwners is null)
             {
-                List<Owner> owners = new List<Owner>();
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT * FROM \"Owner\";";
-
-
-                var command = new NpgsqlCommand(commandText, connection);
-                connection.Open();
-
-                using NpgsqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-
-                        
-                        Owner owner = new Owner();
-                        owner.Id = Guid.Parse(reader["Id"].ToString());
-                        owner.FirstName = reader["FirstName"].ToString();
-                        owner.LastName = reader["LastName"].ToString();
-                        owners.Add(owner);
-                    }
-
-                }
-                else
-                {
-                    return BadRequest("Not found");
-                }
-                return Ok(owners);
-
+                return BadRequest("Not found");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(foundOwners);
         }
     }
 }

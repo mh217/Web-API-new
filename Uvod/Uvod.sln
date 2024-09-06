@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UvodWEBAPI", "UvodWEBAPI\UvodWEBAPI.csproj", "{BD197B50-0B91-4219-BFBA-8C23616E004C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvodWEBAPI", "UvodWEBAPI\UvodWEBAPI.csproj", "{BD197B50-0B91-4219-BFBA-8C23616E004C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Service.Common", "Uvod.Service.Common\Uvod.Service.Common.csproj", "{12C946C4-2C49-4392-852D-8DD9FF2C0DA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Service", "Uvod.Service\Uvod.Service.csproj", "{D70C7186-CCC4-4FF1-AD0D-2074A92A86F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Repository", "Uvod.Repository\Uvod.Repository.csproj", "{D3F7C723-93DD-46DE-AF2D-D65B117EB6B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Repository.Common", "Uvod.Repository.Common\Uvod.Repository.Common.csproj", "{3AFB1B02-026E-48B8-949C-E986418FB80D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Common", "Uvod.Common\Uvod.Common.csproj", "{CBA2CBD4-2515-4AB2-817E-5B21E09BF233}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uvod.Model", "Uvod.Model\Uvod.Model.csproj", "{8C72D2B9-0701-4323-9DBD-55986F2ECCA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +27,30 @@ Global
 		{BD197B50-0B91-4219-BFBA-8C23616E004C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD197B50-0B91-4219-BFBA-8C23616E004C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD197B50-0B91-4219-BFBA-8C23616E004C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12C946C4-2C49-4392-852D-8DD9FF2C0DA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12C946C4-2C49-4392-852D-8DD9FF2C0DA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12C946C4-2C49-4392-852D-8DD9FF2C0DA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12C946C4-2C49-4392-852D-8DD9FF2C0DA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70C7186-CCC4-4FF1-AD0D-2074A92A86F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70C7186-CCC4-4FF1-AD0D-2074A92A86F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D70C7186-CCC4-4FF1-AD0D-2074A92A86F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D70C7186-CCC4-4FF1-AD0D-2074A92A86F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3F7C723-93DD-46DE-AF2D-D65B117EB6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3F7C723-93DD-46DE-AF2D-D65B117EB6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3F7C723-93DD-46DE-AF2D-D65B117EB6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3F7C723-93DD-46DE-AF2D-D65B117EB6B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AFB1B02-026E-48B8-949C-E986418FB80D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AFB1B02-026E-48B8-949C-E986418FB80D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AFB1B02-026E-48B8-949C-E986418FB80D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AFB1B02-026E-48B8-949C-E986418FB80D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBA2CBD4-2515-4AB2-817E-5B21E09BF233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA2CBD4-2515-4AB2-817E-5B21E09BF233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA2CBD4-2515-4AB2-817E-5B21E09BF233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA2CBD4-2515-4AB2-817E-5B21E09BF233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C72D2B9-0701-4323-9DBD-55986F2ECCA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C72D2B9-0701-4323-9DBD-55986F2ECCA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C72D2B9-0701-4323-9DBD-55986F2ECCA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C72D2B9-0701-4323-9DBD-55986F2ECCA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
