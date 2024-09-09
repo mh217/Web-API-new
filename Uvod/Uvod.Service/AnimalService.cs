@@ -12,10 +12,10 @@ namespace Uvod.Service
     public class AnimalService : IAnimalService
     {
 
-        public bool CreateAnimalService(Animal animal)
+        public async Task<bool> CreateAnimalServiceAsync(Animal animal)
         {
             AnimalRepository repository = new AnimalRepository();
-            var animalFound = repository.CreateAnimal(animal);
+            var animalFound = await repository.CreateAnimalAsync(animal);
             if(animalFound == false)
             {
                 return false;
@@ -23,10 +23,10 @@ namespace Uvod.Service
             return true;
         }
 
-        public bool DeleteAnimalService(Guid id) 
+        public async Task<bool> DeleteAnimalServiceAsync(Guid id) 
         {
             AnimalRepository repository = new AnimalRepository();
-            var animalFound = repository.DeleteAnimal(id);
+            var animalFound = await repository.DeleteAnimalAsync(id);
             if (animalFound == false)
             {
                 return false;
@@ -34,10 +34,10 @@ namespace Uvod.Service
             return true;
         }
 
-        public Animal GetAnimalByIdService(Guid id)
+        public async Task<Animal> GetAnimalByIdServiceAsync(Guid id)
         {
             AnimalRepository repository = new AnimalRepository();
-            var animal = repository.GetAnimalById(id);
+            var animal = await repository.GetAnimalByIdAsync(id);
             if (animal == null)
             {
                 return null;
@@ -45,10 +45,10 @@ namespace Uvod.Service
             return animal;
         }
 
-        public List<Animal> GetAllAnimals() 
+        public async Task<List<Animal>> GetAllAnimalsAsync() 
         {
             AnimalRepository repository = new AnimalRepository();
-            var foundAnimals = repository.GetAnimals();
+            var foundAnimals = await repository.GetAnimalsAsync();
             if (foundAnimals == null)
             {
                 return null;
@@ -56,15 +56,15 @@ namespace Uvod.Service
             return foundAnimals;
         }
 
-        public bool UpdateAnimal(Guid id, AnimalUpdate animal)
+        public async Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal)
         {
             AnimalRepository repository = new AnimalRepository();
-            var foundAnimal = repository.GetAnimalById(id);
+            var foundAnimal = await repository.GetAnimalByIdAsync(id);
             if (foundAnimal == null)
             {
                 return false;
             }
-            return repository.UpdateAnimal(id, animal);
+            return await repository.UpdateAnimalAsync(id, animal);
         }
     }
 }

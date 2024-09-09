@@ -9,10 +9,10 @@ namespace Uvod.Service.Common
 {
     public interface IOwnerService
     {
-        public bool CreateOwnerService(Owner owner);
-        public bool DeleteOwnerService(Guid id);
-        public Owner GetOwnerByIdService(Guid id);
-        public List<Owner> GetOwnersService();
-        public bool UpdateOwner(Guid id, Owner owner);
+        public Task<bool> CreateOwnerServiceAsync(Owner owner);
+        public Task<bool> DeleteOwnerServiceAsync(Guid id);
+        public Task<Owner> GetOwnerByIdServiceAsync(Guid id);
+        public Task<List<Owner>> GetOwnersServiceAsync();
+        public Task<bool> UpdateOwnerAsync(Guid id, Owner owner);
     }
 }

@@ -14,7 +14,7 @@ namespace Uvod.Repository
     {
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
-        public bool CreateAnimal(Animal animal)
+        public async Task<bool> CreateAnimalAsync(Animal animal)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@ownerId", NpgsqlTypes.NpgsqlDbType.Uuid, animal.OwnerId);
 
                 connection.Open();
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
                 connection.Close();
 
                 if (numberOfCommits == 0)
@@ -46,7 +46,7 @@ namespace Uvod.Repository
             }
         }
 
-        public bool DeleteAnimal(Guid id)
+        public async Task<bool> DeleteAnimalAsync(Guid id)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@id", id);
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 if (numberOfCommits == 0)
                 {
@@ -71,7 +71,7 @@ namespace Uvod.Repository
             }
         }
 
-        public Animal GetAnimalById(Guid id) 
+        public async Task<Animal> GetAnimalByIdAsync(Guid id) 
         {
             try
             {
@@ -86,11 +86,11 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@id", id);
                 connection.Open();
 
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    reader.Read();
+                    reader.ReadAsync();
                     animal.Id = Guid.Parse(reader["Id"].ToString());
                     animal.Name = reader["Name"].ToString();
                     animal.Specise = reader["Specise"].ToString();
@@ -116,7 +116,7 @@ namespace Uvod.Repository
             }
         }
 
-        public List<Animal> GetAnimals()
+        public async Task<List<Animal>> GetAnimalsAsync()
         {
             try
             {
@@ -126,11 +126,11 @@ namespace Uvod.Repository
 
                 var command = new NpgsqlCommand(commandText, connection);
                 connection.Open();
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         Animal animal = new Animal();
                         Owner owner = new Owner();
@@ -160,18 +160,42 @@ namespace Uvod.Repository
             }
         }
 
-        public bool UpdateAnimal(Guid id, AnimalUpdate animal)
+        public async Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal)
         {
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "UPDATE \"Animal\" SET \"Age\" = @age WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
+                //string commandText = "UPDATE \"Animal\" SET \"Age\" = @age WHERE \"Id\" = @id;";
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("UPDATE \"Animal\" SET");
+                //var command = new NpgsqlCommand(commandText, connection);
+                var command = new NpgsqlCommand(); 
+                command.Connection = connection;
+
+                if (animal.Name != null)
+                {
+                    stringBuilder.Append("\"Name\" = @name, ");
+                    command.Parameters.AddWithValue("@name", animal.Name);
+                }
+                if (animal.Specise != null)
+                {
+                    stringBuilder.Append("\"Specise\" = @specise, ");
+                    command.Parameters.AddWithValue("@specise", animal.Specise);
+                }
+                if (animal.Age != null)
+                {
+                    stringBuilder.Append("\"Age\" = @age, ");
+                    command.Parameters.AddWithValue("@age", animal.Age);
+                }
+
+                stringBuilder.Length -= 2;
+                stringBuilder.Append(" WHERE \"Id\" = @id;");
+                command.CommandText = stringBuilder.ToString();
                 command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@age", animal.Age);
+                
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 if (numberOfCommits == 0)
                 {

@@ -9,10 +9,10 @@ namespace Uvod.Repository.Common
 {
     public interface IOwnerRepository
     {
-        public bool CreateOwner(Owner owner);
-        public bool DeleteOwner(Guid id);
-        public Owner GetOwnerById(Guid id);
-        public List<Owner> GetOwners();
-        public bool UpdateOwner(Guid id, Owner owner);
+        public Task<bool> CreateOwnerAsync(Owner owner);
+        public Task<bool> DeleteOwnerAsync(Guid id);
+        public Task<Owner> GetOwnerByIdAsync(Guid id);
+        public Task<List<Owner>> GetOwnersAsync();
+        public Task<bool> UpdateOwnerAsync(Guid id, Owner owner);
     }
 }

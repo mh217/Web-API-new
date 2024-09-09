@@ -9,10 +9,10 @@ namespace Uvod.Service.Common
 {
     public interface IAnimalService
     {
-        public bool CreateAnimalService(Animal animal);
-        public bool DeleteAnimalService(Guid id);
-        public Animal GetAnimalByIdService(Guid id);
-        public List<Animal> GetAllAnimals();
-        public bool UpdateAnimal(Guid id, AnimalUpdate animal);
+        public Task<bool> CreateAnimalServiceAsync(Animal animal);
+        public Task<bool> DeleteAnimalServiceAsync(Guid id);
+        public Task<Animal> GetAnimalByIdServiceAsync(Guid id);
+        public Task<List<Animal>> GetAllAnimalsAsync();
+        public Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal);
     }
 }

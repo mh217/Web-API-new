@@ -14,7 +14,7 @@ namespace Uvod.Repository
 
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
-        public bool CreateOwner(Owner owner)
+        public async Task<bool> CreateOwnerAsync(Owner owner)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@lastName", owner.LastName);
 
                 connection.Open();
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
                 connection.Close();
 
                 if (numberOfCommits == 0)
@@ -43,7 +43,7 @@ namespace Uvod.Repository
             }
         }
 
-        public bool DeleteOwner(Guid id)
+        public async Task<bool> DeleteOwnerAsync(Guid id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@id", id);
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 if (numberOfCommits == 0)
                 {
@@ -68,7 +68,7 @@ namespace Uvod.Repository
             }
         }
 
-        public Owner GetOwnerById(Guid id) 
+        public async Task<Owner> GetOwnerByIdAsync(Guid id) 
         {
             try
             {
@@ -80,11 +80,11 @@ namespace Uvod.Repository
                 command.Parameters.AddWithValue("@id", id);
                 connection.Open();
 
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    reader.Read();
+                    reader.ReadAsync();
                     owner.Id = Guid.Parse(reader["Id"].ToString());
                     owner.FirstName = reader["FirstName"].ToString();
                     owner.LastName = reader["LastName"].ToString();
@@ -102,7 +102,7 @@ namespace Uvod.Repository
                 return null;
             }
         }
-        public List<Owner> GetOwners() 
+        public async Task<List<Owner>> GetOwnersAsync() 
         {
             try
             {
@@ -112,11 +112,11 @@ namespace Uvod.Repository
 
                 var command = new NpgsqlCommand(commandText, connection);
                 connection.Open();
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         Owner owner = new Owner();
                         owner.Id = Guid.Parse(reader["Id"].ToString());
@@ -137,18 +137,36 @@ namespace Uvod.Repository
             }
         }
 
-        public bool UpdateOwner(Guid id, Owner owner)
+        public async Task<bool> UpdateOwnerAsync(Guid id, Owner owner)
         {
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "UPDATE \"Owner\" SET \"FirstName\" = @firstName  WHERE \"Id\" = @id;";
-                var command = new NpgsqlCommand(commandText, connection);
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("UPDATE \"Owner\" SET");
+
+                var command = new NpgsqlCommand(); 
+                command.Connection = connection;
+
+                if (owner.FirstName != null)
+                {
+                    stringBuilder.Append("\"FirstName\" = @firstName, ");
+                    command.Parameters.AddWithValue("@firstName", owner.FirstName);
+                }
+                if (owner.LastName != null) 
+                {
+                    stringBuilder.Append("\"LastName\" = @lastName, ");
+                    command.Parameters.AddWithValue("@lastName", owner.LastName);
+                }
+                
+                stringBuilder.Length -= 2;
+                stringBuilder.Append(" WHERE \"Id\" = @id;");
+
+                command.CommandText = stringBuilder.ToString();
                 command.Parameters.AddWithValue("@id", id);
-                command.Parameters.AddWithValue("@firstName", owner.FirstName);
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 if (numberOfCommits == 0)
                 {

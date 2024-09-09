@@ -9,10 +9,10 @@ namespace Uvod.Repository.Common
 {
     public interface IAnimalRepository
     {
-        public bool CreateAnimal(Animal animal);
-        public bool DeleteAnimal(Guid id);
-        public Animal GetAnimalById(Guid id);
-        public List<Animal> GetAnimals();
-        public bool UpdateAnimal(Guid id, AnimalUpdate animal);
+        public Task<bool> CreateAnimalAsync(Animal animal);
+        public Task<bool> DeleteAnimalAsync(Guid id);
+        public Task<Animal> GetAnimalByIdAsync(Guid id);
+        public Task<List<Animal>> GetAnimalsAsync();
+        public Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal);
     }
 }
