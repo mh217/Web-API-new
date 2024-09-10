@@ -5,17 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Uvod.Model;
 using Uvod.Repository;
+using Uvod.Repository.Common;
 using Uvod.Service.Common;
 
 namespace Uvod.Service
 {
     public class AnimalService : IAnimalService
     {
+        private IAnimalRepository _animalRepository;
+        
+        public AnimalService(IAnimalRepository animalRepository)
+        {
+            _animalRepository = animalRepository;
+        }
 
         public async Task<bool> CreateAnimalServiceAsync(Animal animal)
         {
-            AnimalRepository repository = new AnimalRepository();
-            var animalFound = await repository.CreateAnimalAsync(animal);
+            var animalFound = await _animalRepository.CreateAnimalAsync(animal);
             if(animalFound == false)
             {
                 return false;
@@ -25,8 +31,7 @@ namespace Uvod.Service
 
         public async Task<bool> DeleteAnimalServiceAsync(Guid id) 
         {
-            AnimalRepository repository = new AnimalRepository();
-            var animalFound = await repository.DeleteAnimalAsync(id);
+            var animalFound = await _animalRepository.DeleteAnimalAsync(id);
             if (animalFound == false)
             {
                 return false;
@@ -36,8 +41,7 @@ namespace Uvod.Service
 
         public async Task<Animal> GetAnimalByIdServiceAsync(Guid id)
         {
-            AnimalRepository repository = new AnimalRepository();
-            var animal = await repository.GetAnimalByIdAsync(id);
+            var animal = await _animalRepository.GetAnimalByIdAsync(id);
             if (animal == null)
             {
                 return null;
@@ -47,8 +51,7 @@ namespace Uvod.Service
 
         public async Task<List<Animal>> GetAllAnimalsAsync() 
         {
-            AnimalRepository repository = new AnimalRepository();
-            var foundAnimals = await repository.GetAnimalsAsync();
+            var foundAnimals = await _animalRepository.GetAnimalsAsync();
             if (foundAnimals == null)
             {
                 return null;
@@ -58,13 +61,12 @@ namespace Uvod.Service
 
         public async Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal)
         {
-            AnimalRepository repository = new AnimalRepository();
-            var foundAnimal = await repository.GetAnimalByIdAsync(id);
+            var foundAnimal = await _animalRepository.GetAnimalByIdAsync(id);
             if (foundAnimal == null)
             {
                 return false;
             }
-            return await repository.UpdateAnimalAsync(id, animal);
+            return await _animalRepository.UpdateAnimalAsync(id, animal);
         }
     }
 }

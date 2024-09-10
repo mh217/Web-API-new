@@ -5,16 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Uvod.Model;
 using Uvod.Repository;
+using Uvod.Repository.Common;
 using Uvod.Service.Common;
 
 namespace Uvod.Service
 {
     public class OwnerService : IOwnerService
     {
+        private IOwnerRepository _ownerRepository; 
+        
+        public OwnerService(IOwnerRepository ownerRepository)
+        {
+            _ownerRepository = ownerRepository;
+        }
+
         public async Task<bool> CreateOwnerServiceAsync(Owner owner)
         {
-            OwnerRepository repository = new OwnerRepository();
-            var ownerFound = await repository.CreateOwnerAsync(owner);
+            var ownerFound = await _ownerRepository.CreateOwnerAsync(owner);
             if (ownerFound == false)
             {
                 return false;
@@ -24,8 +31,7 @@ namespace Uvod.Service
 
         public async Task<bool> DeleteOwnerServiceAsync(Guid id) 
         {
-            OwnerRepository repository = new OwnerRepository();
-            var ownerFound = await repository.DeleteOwnerAsync(id);
+            var ownerFound = await _ownerRepository.DeleteOwnerAsync(id);
             if (ownerFound == false)
             {
                 return false;
@@ -35,8 +41,7 @@ namespace Uvod.Service
 
         public async Task<Owner> GetOwnerByIdServiceAsync(Guid id)
         {
-            OwnerRepository repository = new OwnerRepository();
-            var foundOwner = await repository.GetOwnerByIdAsync(id);
+            var foundOwner = await _ownerRepository.GetOwnerByIdAsync(id);
             if(foundOwner == null)
             {
                 return null;
@@ -46,8 +51,7 @@ namespace Uvod.Service
 
         public async Task<List<Owner>> GetOwnersServiceAsync() 
         {
-            OwnerRepository repository = new OwnerRepository();
-            var foundOwners = await repository.GetOwnersAsync();
+            var foundOwners = await _ownerRepository.GetOwnersAsync();
             if(foundOwners == null)
             {
                 return null;
@@ -57,13 +61,12 @@ namespace Uvod.Service
 
         public async Task<bool> UpdateOwnerAsync(Guid id, Owner owner) 
         {
-            OwnerRepository repository = new OwnerRepository();
-            var foundOwners = await repository.GetOwnerByIdAsync(id);
+            var foundOwners = await _ownerRepository.GetOwnerByIdAsync(id);
             if (foundOwners == null)
             {
                 return false;
             }
-            return await repository.UpdateOwnerAsync(id, owner);
+            return await _ownerRepository.UpdateOwnerAsync(id, owner);
         }
 
     }

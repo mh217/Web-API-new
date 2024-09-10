@@ -1,5 +1,22 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Uvod.Repository;
+using Uvod.Repository.Common;
+using Uvod.Service;
+using Uvod.Service.Common;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>((container) =>
+    {
+        container.RegisterType<AnimalRepository>().As<IAnimalRepository>().InstancePerDependency();
+        container.RegisterType<AnimalService>().As<IAnimalService>().InstancePerDependency();
+        container.RegisterType<OwnerRepository>().As<IOwnerRepository>().InstancePerDependency();
+        container.RegisterType<OwnerService>().As<IOwnerService>().InstancePerDependency();
+    }
+    );
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -8,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
