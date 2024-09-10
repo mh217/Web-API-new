@@ -1,9 +1,11 @@
-﻿using Npgsql;
+﻿using Autofac.Features.OwnedInstances;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Uvod.Model;
 using Uvod.Repository.Common;
 
@@ -74,7 +76,9 @@ namespace Uvod.Repository
             {
                 Owner owner = new Owner();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT * FROM \"Owner\" WHERE \"Id\" = @id;";
+                string commandText = "SELECT o.\"Id\", o.\"FirstName\", o.\"LastName\", a.\"Id\" as \"DogId\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\", a.\"OwnerId\" " +
+                    "FROM \"Owner\" o LEFT JOIN \"Animal\" a ON a.\"OwnerId\" = o.\"Id\" " +
+                    "WHERE o.\"Id\" = @id;";
                 var command = new NpgsqlCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id", id);
@@ -82,13 +86,30 @@ namespace Uvod.Repository
 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
+                
+
                 if (reader.HasRows)
                 {
-                    reader.ReadAsync();
-                    owner.Id = Guid.Parse(reader["Id"].ToString());
-                    owner.FirstName = reader["FirstName"].ToString();
-                    owner.LastName = reader["LastName"].ToString();
+                    while (await reader.ReadAsync())
+                    {
+                        Animal animal = new Animal();
 
+                        owner.Id = Guid.Parse(reader["Id"].ToString());
+                        owner.FirstName = reader["FirstName"].ToString();
+                        owner.LastName = reader["LastName"].ToString();
+
+
+                        if (reader["DogId"] != DBNull.Value)
+                        {
+                            animal.Id = Guid.TryParse(reader["DogId"].ToString(), out var result1) ? result1 : Guid.Empty;
+                            animal.Name = reader["Name"].ToString();
+                            animal.Specise = reader["Specise"].ToString();
+                            animal.Age = Int32.Parse(reader["Age"].ToString());
+                            animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : (DateTime?)null;
+                            animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
+                            owner.Animals.Add(animal);
+                        }
+                    }   
                 }
                 else
                 {

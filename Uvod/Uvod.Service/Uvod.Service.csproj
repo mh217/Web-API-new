@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Uvod.Model\Uvod.Model.csproj" />
     <ProjectReference Include="..\Uvod.Repository\Uvod.Repository.csproj" />
     <ProjectReference Include="..\Uvod.Service.Common\Uvod.Service.Common.csproj" />

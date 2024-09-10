@@ -78,7 +78,9 @@ namespace Uvod.Repository
                 Animal animal = new Animal();
                 Owner owner = new Owner();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\" WHERE a.\"Id\" = @id;";
+                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", " +
+                    "o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\" " +
+                    "WHERE a.\"Id\" = @id;";
 
 
                 var command = new NpgsqlCommand(commandText, connection);
@@ -122,7 +124,8 @@ namespace Uvod.Repository
             {
                 List<Animal> animals = new List<Animal>();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\";";
+                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" " +
+                    "FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\";";
 
                 var command = new NpgsqlCommand(commandText, connection);
                 connection.Open();

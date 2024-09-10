@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Uvod.Model;
 using Uvod.Service;
+using Uvod.Service.Common;
 
 
 
@@ -12,17 +13,22 @@ namespace UvodWEBAPI.Controllers
     [ApiController]
     public class AnimalController : ControllerBase
     {
+        private IAnimalService _animalService;
+
+        public AnimalController(IAnimalService animalService)
+        {
+            _animalService = animalService;
+        }
 
         
-        private static List<Animal> _animals = new List<Animal>();
+        
 
 
         [HttpPost]
         public async Task<IActionResult> CreateAnimalsAsync(Animal animal)
         {
-            AnimalService service = new AnimalService();
-            var animalFound = await service.CreateAnimalServiceAsync(animal);
-            if (animalFound == false)
+            var isAnimalCreated = await _animalService.CreateAnimalServiceAsync(animal);
+            if (!isAnimalCreated)
             {
                 return BadRequest("Not found");
             }
@@ -34,9 +40,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteAnimalByIdAsync(Guid id)
         {
-            AnimalService service = new AnimalService();
-            var animalFound = await service.DeleteAnimalServiceAsync(id);
-            if (animalFound == false)
+            var isAnimalDeleted = await _animalService.DeleteAnimalServiceAsync(id);
+            if (!isAnimalDeleted)
             {
                 return BadRequest("Not found");
             }
@@ -48,9 +53,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateAnimalAsync(Guid id, [FromBody] AnimalUpdate animal)
         {
-            AnimalService service = new AnimalService();
-            var animalFound = await service.UpdateAnimalAsync(id, animal);
-            if (animalFound == false)
+            var isAnimalUpdated = await _animalService.UpdateAnimalAsync(id, animal);
+            if (!isAnimalUpdated)
             {
                 return BadRequest("Not found");
             }
@@ -61,8 +65,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetAnimalByIdAsync(Guid id)
         {
-            AnimalService service = new AnimalService();
-            var animal = await service.GetAnimalByIdServiceAsync(id);
+            
+            var animal = await _animalService.GetAnimalByIdServiceAsync(id);
             if (animal is null)
             {
                 return BadRequest("Not found");
@@ -73,8 +77,7 @@ namespace UvodWEBAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAnimalsAsync()
         {
-            AnimalService service = new AnimalService();
-            var animals = await service.GetAllAnimalsAsync();
+            var animals = await _animalService.GetAllAnimalsAsync();
             if (animals is null)
             {
                 return BadRequest("Not found");

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Uvod.Model;
 using Uvod.Service;
+using Uvod.Service.Common;
 
 
 
@@ -12,13 +13,18 @@ namespace UvodWEBAPI.Controllers
     [ApiController]
     public class OwnerController : ControllerBase
     {
-        
+        private IOwnerService _ownerService;
+
+        public OwnerController(IOwnerService ownerService)
+        {
+            _ownerService = ownerService;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateOwnerAsync(Owner owner)
-        {
-            OwnerService service = new OwnerService(); 
-            var ownerFound = await service.CreateOwnerServiceAsync(owner);
-            if (ownerFound == false) 
+        { 
+            var isOwnerCreated = await _ownerService.CreateOwnerServiceAsync(owner);
+            if (!isOwnerCreated) 
             {
                 return BadRequest("Not found");
             }
@@ -30,9 +36,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteOwnerByIdAsync(Guid id)
         {
-            OwnerService service = new OwnerService();
-            var ownerFound = await service.DeleteOwnerServiceAsync(id);
-            if (ownerFound == false)
+            var isOwnerDeleted = await _ownerService.DeleteOwnerServiceAsync(id);
+            if (!isOwnerDeleted)
             {
                 return BadRequest("Not found");
             }
@@ -43,9 +48,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateOwnerAsync(Guid id, [FromBody] Owner owner)
         {
-            OwnerService service = new OwnerService();
-            var ownerFound = await service.UpdateOwnerAsync(id, owner);
-            if (ownerFound == false)
+            var isOwnerUpdated = await _ownerService.UpdateOwnerAsync(id, owner);
+            if (!isOwnerUpdated)
             {
                 return BadRequest("Not found");
             }
@@ -56,13 +60,12 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetOwnerByIdAsync(Guid id)
         {
-            OwnerService service = new OwnerService();
-            var foundOwner = await service.GetOwnerByIdServiceAsync(id);
-            if (foundOwner is null)
+            var isOwnerFound = await _ownerService.GetOwnerByIdServiceAsync(id);
+            if (isOwnerFound is null)
             {
                 return BadRequest("Not found");
             }
-            return Ok(foundOwner);
+            return Ok(isOwnerFound);
         }
 
 
@@ -70,13 +73,12 @@ namespace UvodWEBAPI.Controllers
 
         public async Task<IActionResult> GetOwnersAsync()
         {
-            OwnerService service = new OwnerService();
-            var foundOwners = await service.GetOwnersServiceAsync();
-            if (foundOwners is null)
+            var isOwnerFound = await _ownerService.GetOwnersServiceAsync();
+            if (isOwnerFound is null)
             {
                 return BadRequest("Not found");
             }
-            return Ok(foundOwners);
+            return Ok(isOwnerFound);
         }
     }
 }
