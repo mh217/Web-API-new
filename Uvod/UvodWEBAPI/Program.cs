@@ -11,10 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>((container) =>
     {
-        container.RegisterType<AnimalRepository>().As<IAnimalRepository>().InstancePerDependency();
-        container.RegisterType<AnimalService>().As<IAnimalService>().InstancePerDependency();
-        container.RegisterType<OwnerRepository>().As<IOwnerRepository>().InstancePerDependency();
-        container.RegisterType<OwnerService>().As<IOwnerService>().InstancePerDependency();
+        container.RegisterModule<ServiceDIModule>();
+        container.RegisterModule<RepositoryDIModule>();
+        
     }
     );
 // Add services to the container.
