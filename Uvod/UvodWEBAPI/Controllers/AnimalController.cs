@@ -21,14 +21,14 @@ namespace UvodWEBAPI.Controllers
         }
 
         
-        private static List<Animal> _animals = new List<Animal>();
+        
 
 
         [HttpPost]
         public async Task<IActionResult> CreateAnimalsAsync(Animal animal)
         {
-            var animalFound = await _animalService.CreateAnimalServiceAsync(animal);
-            if (animalFound == false)
+            var isAnimalCreated = await _animalService.CreateAnimalServiceAsync(animal);
+            if (!isAnimalCreated)
             {
                 return BadRequest("Not found");
             }
@@ -40,8 +40,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteAnimalByIdAsync(Guid id)
         {
-            var animalFound = await _animalService.DeleteAnimalServiceAsync(id);
-            if (animalFound == false)
+            var isAnimalDeleted = await _animalService.DeleteAnimalServiceAsync(id);
+            if (!isAnimalDeleted)
             {
                 return BadRequest("Not found");
             }
@@ -53,8 +53,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateAnimalAsync(Guid id, [FromBody] AnimalUpdate animal)
         {
-            var animalFound = await _animalService.UpdateAnimalAsync(id, animal);
-            if (animalFound == false)
+            var isAnimalUpdated = await _animalService.UpdateAnimalAsync(id, animal);
+            if (!isAnimalUpdated)
             {
                 return BadRequest("Not found");
             }

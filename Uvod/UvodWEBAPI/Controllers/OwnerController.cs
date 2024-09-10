@@ -23,8 +23,8 @@ namespace UvodWEBAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOwnerAsync(Owner owner)
         { 
-            var ownerFound = await _ownerService.CreateOwnerServiceAsync(owner);
-            if (ownerFound == false) 
+            var isOwnerCreated = await _ownerService.CreateOwnerServiceAsync(owner);
+            if (!isOwnerCreated) 
             {
                 return BadRequest("Not found");
             }
@@ -36,8 +36,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteOwnerByIdAsync(Guid id)
         {
-            var ownerFound = await _ownerService.DeleteOwnerServiceAsync(id);
-            if (ownerFound == false)
+            var isOwnerDeleted = await _ownerService.DeleteOwnerServiceAsync(id);
+            if (!isOwnerDeleted)
             {
                 return BadRequest("Not found");
             }
@@ -48,8 +48,8 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateOwnerAsync(Guid id, [FromBody] Owner owner)
         {
-            var ownerFound = await _ownerService.UpdateOwnerAsync(id, owner);
-            if (ownerFound == false)
+            var isOwnerUpdated = await _ownerService.UpdateOwnerAsync(id, owner);
+            if (!isOwnerUpdated)
             {
                 return BadRequest("Not found");
             }
@@ -60,12 +60,12 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetOwnerByIdAsync(Guid id)
         {
-            var foundOwner = await _ownerService.GetOwnerByIdServiceAsync(id);
-            if (foundOwner is null)
+            var isOwnerFound = await _ownerService.GetOwnerByIdServiceAsync(id);
+            if (isOwnerFound is null)
             {
                 return BadRequest("Not found");
             }
-            return Ok(foundOwner);
+            return Ok(isOwnerFound);
         }
 
 
@@ -73,12 +73,12 @@ namespace UvodWEBAPI.Controllers
 
         public async Task<IActionResult> GetOwnersAsync()
         {
-            var foundOwners = await _ownerService.GetOwnersServiceAsync();
-            if (foundOwners is null)
+            var isOwnerFound = await _ownerService.GetOwnersServiceAsync();
+            if (isOwnerFound is null)
             {
                 return BadRequest("Not found");
             }
-            return Ok(foundOwners);
+            return Ok(isOwnerFound);
         }
     }
 }

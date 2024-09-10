@@ -21,8 +21,8 @@ namespace Uvod.Service
 
         public async Task<bool> CreateOwnerServiceAsync(Owner owner)
         {
-            var ownerFound = await _ownerRepository.CreateOwnerAsync(owner);
-            if (ownerFound == false)
+            var isOwnerCreated = await _ownerRepository.CreateOwnerAsync(owner);
+            if (!isOwnerCreated)
             {
                 return false;
             }
@@ -31,8 +31,8 @@ namespace Uvod.Service
 
         public async Task<bool> DeleteOwnerServiceAsync(Guid id) 
         {
-            var ownerFound = await _ownerRepository.DeleteOwnerAsync(id);
-            if (ownerFound == false)
+            var isOwnerDeleted = await _ownerRepository.DeleteOwnerAsync(id);
+            if (!isOwnerDeleted)
             {
                 return false;
             }
@@ -41,28 +41,28 @@ namespace Uvod.Service
 
         public async Task<Owner> GetOwnerByIdServiceAsync(Guid id)
         {
-            var foundOwner = await _ownerRepository.GetOwnerByIdAsync(id);
-            if(foundOwner == null)
+            var isOwnerFound = await _ownerRepository.GetOwnerByIdAsync(id);
+            if(isOwnerFound == null)
             {
                 return null;
             }
-            return foundOwner;
+            return isOwnerFound;
         }
 
         public async Task<List<Owner>> GetOwnersServiceAsync() 
         {
-            var foundOwners = await _ownerRepository.GetOwnersAsync();
-            if(foundOwners == null)
+            var areOwnersFound = await _ownerRepository.GetOwnersAsync();
+            if(areOwnersFound == null)
             {
                 return null;
             }
-            return foundOwners;
+            return areOwnersFound;
         }
 
         public async Task<bool> UpdateOwnerAsync(Guid id, Owner owner) 
         {
-            var foundOwners = await _ownerRepository.GetOwnerByIdAsync(id);
-            if (foundOwners == null)
+            var isOwnerFound = await _ownerRepository.GetOwnerByIdAsync(id);
+            if (isOwnerFound == null)
             {
                 return false;
             }

@@ -21,8 +21,8 @@ namespace Uvod.Service
 
         public async Task<bool> CreateAnimalServiceAsync(Animal animal)
         {
-            var animalFound = await _animalRepository.CreateAnimalAsync(animal);
-            if(animalFound == false)
+            var isAnimalCreated = await _animalRepository.CreateAnimalAsync(animal);
+            if(!isAnimalCreated)
             {
                 return false;
             }
@@ -31,8 +31,8 @@ namespace Uvod.Service
 
         public async Task<bool> DeleteAnimalServiceAsync(Guid id) 
         {
-            var animalFound = await _animalRepository.DeleteAnimalAsync(id);
-            if (animalFound == false)
+            var isAnimalDeleted = await _animalRepository.DeleteAnimalAsync(id);
+            if (!isAnimalDeleted)
             {
                 return false;
             }
