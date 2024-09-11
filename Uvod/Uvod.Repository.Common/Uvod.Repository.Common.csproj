@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Uvod.Common\Uvod.Common.csproj" />
     <ProjectReference Include="..\Uvod.Model\Uvod.Model.csproj" />
   </ItemGroup>
 

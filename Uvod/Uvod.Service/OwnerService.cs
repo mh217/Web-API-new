@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Repository;
 using Uvod.Repository.Common;
@@ -49,9 +50,9 @@ namespace Uvod.Service
             return isOwnerFound;
         }
 
-        public async Task<List<Owner>> GetOwnersServiceAsync() 
+        public async Task<List<Owner>> GetOwnersServiceAsync(Sorting sort, Paging paging, OwnerFilter filter) 
         {
-            var areOwnersFound = await _ownerRepository.GetOwnersAsync();
+            var areOwnersFound = await _ownerRepository.GetOwnersAsync(sort, paging, filter);
             if(areOwnersFound == null)
             {
                 return null;

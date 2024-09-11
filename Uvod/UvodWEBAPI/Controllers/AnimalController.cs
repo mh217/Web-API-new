@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Service;
 using Uvod.Service.Common;
@@ -19,10 +20,6 @@ namespace UvodWEBAPI.Controllers
         {
             _animalService = animalService;
         }
-
-        
-        
-
 
         [HttpPost]
         public async Task<IActionResult> CreateAnimalsAsync(Animal animal)
@@ -75,9 +72,24 @@ namespace UvodWEBAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAnimalsAsync()
+        public async Task<IActionResult> GetAnimalsAsync(string orderBy = "Name", string orderDirection = "DESC", int rpp = 4, int pageNumber = 1, 
+            string animalName = "", string specise = "", int ageMin = 0, int ageMax = 0, DateTime? dateOfBirthMax = null, DateTime? dateOfBirthMin = null, string name = "")
         {
-            var animals = await _animalService.GetAllAnimalsAsync();
+            Sorting sort = new Sorting();
+            sort.OrderBy = orderBy;
+            sort.OrderDirection = orderDirection;
+            Paging paging = new Paging();
+            paging.PageNumber = pageNumber;
+            paging.Rpp = rpp;
+            AnimalFilter filter = new AnimalFilter();
+            filter.NameQuery = animalName;
+            filter.SpeciesQuery = specise;
+            filter.AgeMin = ageMin;
+            filter.AgeMax = ageMax;
+            filter.DateOfBirthMax = dateOfBirthMax;
+            filter.DateOfBirthMin = dateOfBirthMin;
+            filter.Owner = name; 
+            var animals = await _animalService.GetAllAnimalsAsync(sort, paging, filter);
             if (animals is null)
             {
                 return BadRequest("Not found");

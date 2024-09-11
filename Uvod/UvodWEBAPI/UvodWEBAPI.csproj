@@ -14,8 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Uvod.Common\Uvod.Common.csproj" />
     <ProjectReference Include="..\Uvod.Model\Uvod.Model.csproj" />
     <ProjectReference Include="..\Uvod.Service\Uvod.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

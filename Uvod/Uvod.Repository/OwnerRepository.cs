@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Repository.Common;
 
@@ -123,15 +124,30 @@ namespace Uvod.Repository
                 return null;
             }
         }
-        public async Task<List<Owner>> GetOwnersAsync() 
+        public async Task<List<Owner>> GetOwnersAsync(Sorting sort, Paging paging, OwnerFilter filter) 
         {
             try
             {
                 List<Owner> owners = new List<Owner>();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT * FROM \"Owner\";";
+                //string commandText = "SELECT * FROM \"Owner\";";
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("SELECT * FROM \"Owner\" ");
+                var command = new NpgsqlCommand();
+                command.Connection = connection;
+                //var command = new NpgsqlCommand(commandText, connection);
 
-                var command = new NpgsqlCommand(commandText, connection);
+                if (!(string.IsNullOrEmpty(filter.SearchQuery))) 
+                {
+                    stringBuilder.Append(" WHERE CONCAT(\"FirstName\", ' ', \"LastName\") ILIKE @name OR CONCAT(\"LastName\", ' ', \"FirstName\") ILIKE @name");
+                    command.Parameters.AddWithValue("@name", StringExtension.AddStringBetween(filter.SearchQuery));
+                }
+                stringBuilder.Append($" ORDER BY \"{sort.OrderBy}\" {sort.OrderDirection}");
+                stringBuilder.Append($" OFFSET @offset FETCH NEXT @nextRows ROWS ONLY;");
+                command.Parameters.AddWithValue("@offset", paging.Rpp * (paging.PageNumber - 1));
+                command.Parameters.AddWithValue("@nextRows", paging.Rpp);
+                command.CommandText = stringBuilder.ToString();
+
                 connection.Open();
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Service;
 using Uvod.Service.Common;
+
 
 
 
@@ -71,9 +73,17 @@ namespace UvodWEBAPI.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetOwnersAsync()
+        public async Task<IActionResult> GetOwnersAsync(string orderBy = "FirstName", string orderDirection = "DESC", int rpp = 4, int pageNumber = 1, string name = "")
         {
-            var isOwnerFound = await _ownerService.GetOwnersServiceAsync();
+            Sorting sort = new Sorting();
+            Paging paging = new Paging();
+            OwnerFilter filter = new OwnerFilter();
+            sort.OrderBy = orderBy;
+            sort.OrderDirection = orderDirection;
+            paging.Rpp = rpp;
+            paging.PageNumber = pageNumber;
+            filter.SearchQuery = name;
+            var isOwnerFound = await _ownerService.GetOwnersServiceAsync(sort,paging,filter);
             if (isOwnerFound is null)
             {
                 return BadRequest("Not found");

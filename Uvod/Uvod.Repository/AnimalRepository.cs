@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Repository.Common;
 
@@ -118,16 +119,68 @@ namespace Uvod.Repository
             }
         }
 
-        public async Task<List<Animal>> GetAnimalsAsync()
+        public async Task<List<Animal>> GetAnimalsAsync(Sorting sort, Paging paging, AnimalFilter filter)
         {
             try
             {
                 List<Animal> animals = new List<Animal>();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" " +
-                    "FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\";";
+                //string commandText = "SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" " +
+                    //"FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\";";
 
-                var command = new NpgsqlCommand(commandText, connection);
+                //var command = new NpgsqlCommand(commandText, connection);
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("SELECT a.\"Id\", a.\"Name\",a.\"Specise\", a.\"Age\",a.\"DateOfBirth\",a.\"OwnerId\",o.\"Id\", o.\"FirstName\", o.\"LastName\" FROM \"Animal\" a LEFT JOIN \"Owner\" o ON a.\"OwnerId\" = o.\"Id\" WHERE 1=1 ");
+                var command = new NpgsqlCommand();
+                command.Connection = connection; 
+
+                if (filter != null)
+                { 
+                    if(!(string.IsNullOrWhiteSpace(filter.Owner)))
+                    {
+                        stringBuilder.Append(" AND (CONCAT(o.\"FirstName\", ' ', o.\"LastName\") ILIKE @name OR CONCAT(o.\"LastName\", ' ', o.\"FirstName\") ILIKE @name) ");
+                        command.Parameters.AddWithValue("@name", StringExtension.AddStringBetween(filter.Owner));
+                    }
+                    if(!(string.IsNullOrWhiteSpace(filter.NameQuery)))
+                    {
+                        stringBuilder.Append(" AND a.\"Name\" ILIKE @animalName  ");
+                        command.Parameters.AddWithValue("@animalName", StringExtension.AddStringBetween(filter.NameQuery));
+                    }
+                    if (!(string.IsNullOrWhiteSpace(filter.SpeciesQuery)))
+                    {
+                        stringBuilder.Append(" AND a.\"Specise\" ILIKE @species  ");
+                        command.Parameters.AddWithValue("@species", StringExtension.AddStringBetween(filter.SpeciesQuery));
+                    }
+                    if(filter.AgeMax != 0)
+                    {
+                        stringBuilder.Append(" AND a.\"Age\" < @ageMax  ");
+                        command.Parameters.AddWithValue("@ageMax", filter.AgeMax);
+                    }
+                    if (filter.AgeMin != 0)
+                    {
+                        stringBuilder.Append(" AND a.\"Age\" > @ageMin  ");
+                        command.Parameters.AddWithValue("@ageMin", filter.AgeMin);
+                    }
+                    if (filter.DateOfBirthMax != null)
+                    {
+                        stringBuilder.Append(" AND a.\"DateOfBirth\" < @dateMax ");
+                        command.Parameters.AddWithValue("@dateMax", filter.DateOfBirthMax);
+                    }
+                    if (filter.DateOfBirthMin != null)
+                    {
+                        stringBuilder.Append(" AND a.\"DateOfBirth\" > @dateMin  ");
+                        command.Parameters.AddWithValue("@ageMin", filter.DateOfBirthMin);
+                    }
+                }
+
+
+                stringBuilder.Append($" ORDER BY \"{sort.OrderBy}\" {sort.OrderDirection}");
+                stringBuilder.Append($" OFFSET @offset FETCH NEXT @nextRows ROWS ONLY;");
+                command.Parameters.AddWithValue("@offset", paging.Rpp * (paging.PageNumber - 1));
+                command.Parameters.AddWithValue("@nextRows", paging.Rpp);
+                command.CommandText = stringBuilder.ToString();
+
                 connection.Open();
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 

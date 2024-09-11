@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uvod.Common;
 using Uvod.Model;
 using Uvod.Repository;
 using Uvod.Repository.Common;
@@ -49,9 +50,9 @@ namespace Uvod.Service
             return animal;
         }
 
-        public async Task<List<Animal>> GetAllAnimalsAsync() 
+        public async Task<List<Animal>> GetAllAnimalsAsync(Sorting sort, Paging paging, AnimalFilter filter) 
         {
-            var foundAnimals = await _animalRepository.GetAnimalsAsync();
+            var foundAnimals = await _animalRepository.GetAnimalsAsync(sort, paging, filter);
             if (foundAnimals == null)
             {
                 return null;

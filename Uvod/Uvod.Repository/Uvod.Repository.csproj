@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Uvod.Common\Uvod.Common.csproj" />
     <ProjectReference Include="..\Uvod.Model\Uvod.Model.csproj" />
     <ProjectReference Include="..\Uvod.Repository.Common\Uvod.Repository.Common.csproj" />
   </ItemGroup>
