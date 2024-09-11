@@ -5,6 +5,7 @@ using Uvod.Common;
 using Uvod.Model;
 using Uvod.Service;
 using Uvod.Service.Common;
+using UvodWEBAPI.Models;
 
 
 
@@ -33,7 +34,7 @@ namespace UvodWEBAPI.Controllers
             return Ok("Owner Added");
             
         }
-
+        
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteOwnerByIdAsync(Guid id)
@@ -50,6 +51,20 @@ namespace UvodWEBAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateOwnerAsync(Guid id, [FromBody] Owner owner)
         {
+            var isOwnerUpdated = await _ownerService.UpdateOwnerAsync(id, owner);
+            if (!isOwnerUpdated)
+            {
+                return BadRequest("Not found");
+            }
+            return Ok("Owner updated");
+        }
+
+        [HttpPut]
+        [Route("UpdateOwnerName/{id}")]
+        public async Task<IActionResult> UpdateOwnerNameAsync(Guid id, [FromBody] UpdateOwner newOwner)
+        {
+            Owner owner = new Owner(); 
+            owner.FirstName = newOwner.FirstName;
             var isOwnerUpdated = await _ownerService.UpdateOwnerAsync(id, owner);
             if (!isOwnerUpdated)
             {
@@ -90,5 +105,7 @@ namespace UvodWEBAPI.Controllers
             }
             return Ok(isOwnerFound);
         }
+
+
     }
 }

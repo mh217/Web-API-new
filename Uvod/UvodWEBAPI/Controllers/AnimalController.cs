@@ -5,6 +5,7 @@ using Uvod.Common;
 using Uvod.Model;
 using Uvod.Service;
 using Uvod.Service.Common;
+using UvodWEBAPI.Models;
 
 
 
@@ -32,6 +33,8 @@ namespace UvodWEBAPI.Controllers
             return Ok("Animal Added");
         }
 
+        
+
 
         [HttpDelete]
         [Route("{id}")]
@@ -47,8 +50,22 @@ namespace UvodWEBAPI.Controllers
 
 
         [HttpPut]
+        [Route("UpdateAge/{id}")]
+        public async Task<IActionResult> UpdateAnimalAgeAsync(Guid id, [FromBody] UpdateAnimal animalAge)
+        {
+            Animal animal = new Animal();
+            animal.Age = animalAge.Age;
+            var isAnimalUpdated = await _animalService.UpdateAnimalAsync(id, animal);
+            if (!isAnimalUpdated)
+            {
+                return BadRequest("Not found");
+            }
+            return Ok("Animal updated");
+        }
+
+        [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateAnimalAsync(Guid id, [FromBody] AnimalUpdate animal)
+        public async Task<IActionResult> UpdateAnimalAsync(Guid id, [FromBody] Animal animal)
         {
             var isAnimalUpdated = await _animalService.UpdateAnimalAsync(id, animal);
             if (!isAnimalUpdated)
@@ -96,6 +113,42 @@ namespace UvodWEBAPI.Controllers
             }
             return Ok(animals);
         }
+
+        [HttpGet]
+        [Route("GetAnimalNameAndAge{id}")]
+        public async Task<IActionResult> GetAnimalByIdNameAndAgeAsync(Guid id)
+        {
+
+            var animal = await _animalService.GetAnimalByIdServiceAsync(id);
+            if (animal is null)
+            {
+                return BadRequest("Not found");
+            }
+
+            GetAnimal foundAnimal = new GetAnimal();
+            foundAnimal.Name = animal.Name;
+            foundAnimal.Age = animal.Age;
+            return Ok(foundAnimal);
+        }
+
+        [HttpGet]
+        [Route("GetAnimalNameDateAndOwner{id}")]
+        public async Task<IActionResult> GetAnimalByIdDataAsync(Guid id)
+        {
+
+            var animal = await _animalService.GetAnimalByIdServiceAsync(id);
+            if (animal is null)
+            {
+                return BadRequest("Not found");
+            }
+
+            GetAnimalData foundAnimal = new GetAnimalData();
+            foundAnimal.Name = animal.Name;
+            foundAnimal.DateOfBirth = animal.DateOfBirth;
+            foundAnimal.Owner = animal.Owner;
+            return Ok(foundAnimal);
+        }
+
 
 
     }

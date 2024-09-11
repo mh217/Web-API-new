@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Uvod.Service\Uvod.Service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>

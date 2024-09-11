@@ -216,7 +216,7 @@ namespace Uvod.Repository
             }
         }
 
-        public async Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal)
+        public async Task<bool> UpdateAnimalAsync(Guid id, Animal animal)
         {
             try
             {

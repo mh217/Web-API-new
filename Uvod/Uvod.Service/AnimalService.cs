@@ -60,7 +60,7 @@ namespace Uvod.Service
             return foundAnimals;
         }
 
-        public async Task<bool> UpdateAnimalAsync(Guid id, AnimalUpdate animal)
+        public async Task<bool> UpdateAnimalAsync(Guid id, Animal animal)
         {
             var foundAnimal = await _animalRepository.GetAnimalByIdAsync(id);
             if (foundAnimal == null)
