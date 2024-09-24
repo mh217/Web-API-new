@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import './AddAnimals.css';
+import './AddAnimalForm.css';
 
-function AddAnimal({ animals, setAnimals }) {
+function AddAnimalForm({ animals, setAnimals }) {
     const [animal, setAnimal] = useState({});
 
     function handleChanges(e) {
@@ -11,8 +11,7 @@ function AddAnimal({ animals, setAnimals }) {
     function submitChange() {
         const newAnimal = { ...animal, id: animals.length + 1 }; 
         setAnimals([...animals, newAnimal]);
-        setAnimal({ name: '', species: '', age: '' }); 
-        
+        setAnimal({ name: '', species: '', age: '' });   
     }
 
     return (
@@ -51,4 +50,4 @@ function AddAnimal({ animals, setAnimals }) {
     );
 }
 
-export default AddAnimal;
+export default AddAnimalForm;

@@ -1,9 +1,9 @@
 import './App.css';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import AddAnimal from './AddAnimal';
-import GetAnimals from './GetAnimals';
-import EditAnimal from './EditAnimal';
+import AddAnimalForm from './AddAnimalForm';
+import EditAnimalForm from './EditAnimalForm';
+import AnimalTable from './AnimalTable';
 
 function App() {
   const [animals, setAnimals] = useState([]);
@@ -11,13 +11,14 @@ function App() {
 
   useEffect(() => {
     const storedAnimals = JSON.parse(localStorage.getItem('animals'));
-    if (storedAnimals) {
-      setAnimals(storedAnimals);
-    }
+    setAnimals(storedAnimals);
+
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('animals', JSON.stringify(animals));
+    if(animals.length > 0) {
+      localStorage.setItem('animals', JSON.stringify(animals));
+    }
   }, [animals]);
 
 
@@ -27,9 +28,9 @@ function App() {
 
   return (
     <div>
-      <GetAnimals animals={animals} setAnimals={setAnimals}  onSelectAnimal={handleSelectAnimal}/>
-      <AddAnimal animals={animals} setAnimals={setAnimals} />
-      {selectedAnimalId && <EditAnimal animalId={selectedAnimalId} animals={animals} setAnimals={setAnimals} setSelectedAnimalId={setSelectedAnimalId} />}
+      <AnimalTable animals={animals} setAnimals={setAnimals}  onSelectAnimal={handleSelectAnimal}/>
+      <AddAnimalForm animals={animals} setAnimals={setAnimals} />
+      {selectedAnimalId && <EditAnimalForm animalId={selectedAnimalId} animals={animals} setAnimals={setAnimals} setSelectedAnimalId={setSelectedAnimalId} />}
     </div>
   );
   

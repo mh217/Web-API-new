@@ -1,7 +1,7 @@
-import './GetAnimals.css';
-import AnimalRow from './AnimalRow';
+import './AnimalTable.css';
 
-function GetAnimals({ animals, setAnimals, onSelectAnimal }) {
+
+function AnimalTable({ animals, setAnimals, onSelectAnimal }) {
 
   function handleDelete(id) {
     const updatedAnimals = animals.filter((animal) => animal.id !== id); 
@@ -36,4 +36,4 @@ function GetAnimals({ animals, setAnimals, onSelectAnimal }) {
     );
 }
 
-export default GetAnimals;
+export default AnimalTable;

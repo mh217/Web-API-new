@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react';
 
-function EditAnimal({ animalId, animals, setAnimals, setSelectedAnimalId }) {
-    const [updatedAnimal, setUpdatedAnimal] = useState({
-        name: '',
-        species: '',
-        age: ''
-    });
+function EditAnimalForm({ animalId, animals, setAnimals, setSelectedAnimalId }) {
+    const [updatedAnimal, setUpdatedAnimal] = useState({});
 
     useEffect(() => {
         const animal = animals.find((animal) => animal.id === animalId);
@@ -69,4 +65,4 @@ function EditAnimal({ animalId, animals, setAnimals, setSelectedAnimalId }) {
     );
 }
   
-export default EditAnimal;
+export default EditAnimalForm;
