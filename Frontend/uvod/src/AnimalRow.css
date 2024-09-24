@@ -1,0 +1,21 @@
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+button {
+    background-color: #9D6A89;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: #ff0606;
+    box-shadow: 0 12px 16px 0 rgba(255, 131, 131, 0.86), 0 17px 50px 0 rgba(255, 138, 138, 0.827);
+}
