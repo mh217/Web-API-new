@@ -89,6 +89,21 @@ namespace UvodWEBAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllAnimals")]
+        public async Task<IActionResult> GetAllAnimalsAsync()
+        {
+
+            var animal = await _animalService.GetAllAnimalsAsync();
+            if (animal is null)
+            {
+                return BadRequest("Not found");
+            }
+            return Ok(animal);
+        }
+
+
+
+        [HttpGet]
         public async Task<IActionResult> GetAnimalsAsync(string orderBy = "Name", string orderDirection = "DESC", int rpp = 4, int pageNumber = 1, 
             string animalName = "", string specise = "", int ageMin = 0, int ageMax = 0, DateTime? dateOfBirthMax = null, DateTime? dateOfBirthMin = null, string name = "")
         {

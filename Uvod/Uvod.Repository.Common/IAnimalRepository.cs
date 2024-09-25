@@ -15,5 +15,6 @@ namespace Uvod.Repository.Common
         public Task<Animal> GetAnimalByIdAsync(Guid id);
         public Task<List<Animal>> GetAnimalsAsync(Sorting sort, Paging paging, AnimalFilter filter);
         public Task<bool> UpdateAnimalAsync(Guid id, Animal animal);
+        public Task<List<Animal>> GetAllAnimalsAsync();
     }
 }

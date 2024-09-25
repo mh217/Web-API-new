@@ -13,19 +13,19 @@ namespace Uvod.Repository
 {
     public class AnimalRepository : IAnimalRepository
     {
-        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
+        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=12345;Database=WebDatabase";
 
         public async Task<bool> CreateAnimalAsync(Animal animal)
         {
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "INSERT INTO \"Animal\"  VALUES (@id, @name, @specise, @age, @dateOfBirth, @ownerId); ";
+                string commandText = "INSERT INTO \"Animal\"  VALUES (@id, @name, @species, @age, @dateOfBirth, @ownerId); ";
                 var command = new NpgsqlCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
                 command.Parameters.AddWithValue("@name", animal.Name);
-                command.Parameters.AddWithValue("@specise", animal.Specise);
+                command.Parameters.AddWithValue("@species", animal.Species);
                 command.Parameters.AddWithValue("@age", animal.Age);
                 command.Parameters.AddWithValue("@dateOfBirth", animal.DateOfBirth);
                 command.Parameters.AddWithValue("@ownerId", NpgsqlTypes.NpgsqlDbType.Uuid, animal.OwnerId);
@@ -96,7 +96,7 @@ namespace Uvod.Repository
                     reader.ReadAsync();
                     animal.Id = Guid.Parse(reader["Id"].ToString());
                     animal.Name = reader["Name"].ToString();
-                    animal.Specise = reader["Specise"].ToString();
+                    animal.Species = reader["Specise"].ToString();
                     animal.Age = Int32.Parse(reader["Age"].ToString());
                     animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : null;
                     animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
@@ -111,6 +111,49 @@ namespace Uvod.Repository
                     return null;
                 }
                 return animal;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<Animal>> GetAllAnimalsAsync()
+        {
+            try
+            {
+                List<Animal> animals = new List<Animal>();
+                using var connection = new NpgsqlConnection(connectionString);
+                string commandText = "SELECT * FROM \"Animal\";";
+
+
+                var command = new NpgsqlCommand(commandText, connection);
+
+                connection.Open();
+
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows)
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Animal animal = new Animal();
+                        animal.Id = Guid.Parse(reader["Id"].ToString());
+                        animal.Name = reader["Name"].ToString();
+                        animal.Species = reader["Specise"].ToString();
+                        animal.Age = Int32.Parse(reader["Age"].ToString());
+                        animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : null;
+                        animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
+                        animals.Add(animal);
+                    }
+
+                }
+                else
+                {
+                    return null;
+                }
+                return animals;
 
             }
             catch (Exception ex)
@@ -192,7 +235,7 @@ namespace Uvod.Repository
                         Owner owner = new Owner();
                         animal.Id = Guid.Parse(reader["Id"].ToString());
                         animal.Name = reader["Name"].ToString();
-                        animal.Specise = reader["Specise"].ToString();
+                        animal.Species = reader["Specise"].ToString();
                         animal.Age = Int32.Parse(reader["Age"].ToString());
                         animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : null;
                         animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
@@ -233,10 +276,10 @@ namespace Uvod.Repository
                     stringBuilder.Append("\"Name\" = @name, ");
                     command.Parameters.AddWithValue("@name", animal.Name);
                 }
-                if (animal.Specise != null)
+                if (animal.Species != null)
                 {
                     stringBuilder.Append("\"Specise\" = @specise, ");
-                    command.Parameters.AddWithValue("@specise", animal.Specise);
+                    command.Parameters.AddWithValue("@specise", animal.Species);
                 }
                 if (animal.Age != null)
                 {

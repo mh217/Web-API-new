@@ -56,3 +56,18 @@ th {
   background-color: #9D6A89;
   color: white;
 }
+
+select {
+  background-color: #9D6A89;
+  border: thin solid #ffaedf;
+  color: rgb(241, 241, 241);
+  border-radius: 4px;
+  display: inline-block;
+  font: inherit;
+  line-height: 1.5em;
+  padding: 0.5em 3.5em 0.5em 1em;
+  margin: 0;      
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}

@@ -50,6 +50,16 @@ namespace Uvod.Service
             return animal;
         }
 
+        public async Task<List<Animal>> GetAllAnimalsAsync()
+        {
+            var animal = await _animalRepository.GetAllAnimalsAsync();
+            if (animal == null)
+            {
+                return null;
+            }
+            return animal;
+        }
+
         public async Task<List<Animal>> GetAllAnimalsAsync(Sorting sort, Paging paging, AnimalFilter filter) 
         {
             var foundAnimals = await _animalRepository.GetAnimalsAsync(sort, paging, filter);

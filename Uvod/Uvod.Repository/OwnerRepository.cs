@@ -15,7 +15,7 @@ namespace Uvod.Repository
     public class OwnerRepository : IOwnerRepository
     {
 
-        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
+        private const string connectionString = "Host=localhost:5432;Username=postgres;Password=12345;Database=WebDatabase";
 
         public async Task<bool> CreateOwnerAsync(Owner owner)
         {
@@ -104,7 +104,7 @@ namespace Uvod.Repository
                         {
                             animal.Id = Guid.TryParse(reader["DogId"].ToString(), out var result1) ? result1 : Guid.Empty;
                             animal.Name = reader["Name"].ToString();
-                            animal.Specise = reader["Specise"].ToString();
+                            animal.Species = reader["Specise"].ToString();
                             animal.Age = Int32.Parse(reader["Age"].ToString());
                             animal.DateOfBirth = DateTime.TryParse(reader["DateOfBirth"].ToString(), out DateTime result) ? result : (DateTime?)null;
                             animal.OwnerId = Guid.Parse(reader["OwnerId"].ToString());
