@@ -90,13 +90,20 @@ namespace UvodWEBAPI.Controllers
 
         [HttpGet]
         [Route("GetAllAnimals")]
-        public async Task<IActionResult> GetAllAnimalsAsync()
+        public async Task<IActionResult> GetAllAnimalsAsync(string animalName = "", string specise = "", int ageMin = 0, int ageMax = 0, DateTime? dateOfBirthMax = null, DateTime? dateOfBirthMin = null, string name = "")
         {
-
-            var animal = await _animalService.GetAllAnimalsAsync();
+            AnimalFilter filter = new AnimalFilter();
+            filter.NameQuery = animalName;
+            filter.SpeciesQuery = specise;
+            filter.AgeMin = ageMin;
+            filter.AgeMax = ageMax;
+            filter.DateOfBirthMax = dateOfBirthMax;
+            filter.DateOfBirthMin = dateOfBirthMin;
+            filter.Owner = name;
+            var animal = await _animalService.GetAllAnimalsAsync(filter);
             if (animal is null)
             {
-                return BadRequest("Not found");
+                return BadRequest("Error");
             }
             return Ok(animal);
         }
@@ -124,7 +131,7 @@ namespace UvodWEBAPI.Controllers
             var animals = await _animalService.GetAllAnimalsAsync(sort, paging, filter);
             if (animals is null)
             {
-                return BadRequest("Not found");
+                return BadRequest("Error");
             }
             return Ok(animals);
         }

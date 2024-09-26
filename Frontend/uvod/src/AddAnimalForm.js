@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AddAnimalForm.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function AddAnimalForm({ animals, setAnimals }) {
+function AddAnimalForm() {
+    const navigate = useNavigate(); 
     const [animal, setAnimal] = useState({
         name: '',
         species: '',
@@ -10,12 +12,22 @@ function AddAnimalForm({ animals, setAnimals }) {
         dateOfBirth: '',
         ownerId:''
     });
+    const [owners, setOwners] = useState([]);
+
+    useEffect(() => {
+        axios
+          .get('http://localhost:5135/api/Owner') 
+          .then(response => {
+            setOwners(response.data)
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+    }, [owners]);
 
     function handleChanges(e) {
-        setAnimal({ ...animal, [e.target.name]: e.target.value });
-        
+        setAnimal({ ...animal, [e.target.name]: e.target.value }); 
     }
-    
 
     function submitChange() {
         const formattedAnimal = {
@@ -38,60 +50,58 @@ function AddAnimalForm({ animals, setAnimals }) {
         })  
     }
 
-
-
     return (
         <>
-            <h2>Add Animal</h2>
-            <label>
-                Name:{' '}
+        <button className='addAnimalForm' onClick={() => navigate('/')}>Back</button>
+        <div className='card'> 
+            <div className='container'>
+                <h2>Add Animal</h2>
                 <input
                     name="name"
                     value={animal.name}
                     onChange={handleChanges}
                     required
+                    placeholder="Name"
                 />
-            </label>
-            <br />
-            <label>
-                Species:{' '}
+                <br />
                 <input
                     name="species"
                     value={animal.species}
                     onChange={handleChanges}
+                    placeholder="Species"
                 />
-            </label>
-            <br />
-            <label>
-                Age:{' '}
+                <br />
                 <input
                     name="age"
+                    type='number'
+                    min = "1"
                     value={animal.age}
                     onChange={handleChanges}
+                    placeholder="Age"
                 />
-            </label>
-            <br />
-            <label>
-                Date Of Birth:{' '}
+                <br />
                 <input
                     type='date'
                     name="dateOfBirth"
                     value={animal.dateOfBirth}
                     onChange={handleChanges}
+                    placeholder="Date of Birth"
                 />
-            </label>
-            <br />
-            <label>
-                Owner:{' '}
-                <input
-                    name="ownerId"
-                    value={animal.ownerId}
-                    onChange={handleChanges}
-                />
-            </label>
-            <br />
-            <button className='submit' type="button" onClick={submitChange}>Submit</button>
-        </>
+                <br />
+                <select name="ownerId" value={animal.ownerId} onChange={handleChanges}>
+                    <option value="" disabled hidden>Select Owner</option>
+                    {owners.map(owner => (
+                        <option key={owner.id} value={owner.id}>
+                            {owner.firstName} {owner.lastName}
+                        </option>
+                    ))}
+                </select>
+                <br />
+                <button className='submit' type="button" onClick={submitChange}>Submit</button>
+                <br />
+            </div>
+        </div>
+    </>
     );
 }
 

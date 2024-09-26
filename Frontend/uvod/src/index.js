@@ -3,13 +3,38 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import AddAnimalForm from './AddAnimalForm';
+import AnimalCard from './AnimalCard';
+import EditAnimalForm from './EditAnimalForm';
 
+const router = createBrowserRouter([
+  {
+    path:"/", 
+    element: <App />  
+  }, 
+  {
+    path:"/add", 
+    element: <AddAnimalForm />
+  }, 
+  {
+    path:"/moreInfo/:animalId",
+    element: <AnimalCard />
+  },
+  {
+    path:"/update/:animalId",
+    element: <EditAnimalForm />
+  }
 
+])
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-     <App />  
+      <RouterProvider router = {router}/> 
   </React.StrictMode>
 );
 

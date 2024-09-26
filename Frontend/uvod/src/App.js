@@ -2,19 +2,19 @@ import './App.css';
 import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import AddAnimalForm from './AddAnimalForm';
-import EditAnimalForm from './EditAnimalForm';
 import AnimalTable from './AnimalTable';
-import AnimalCard from './AnimalCard';
+import { Link } from 'react-router-dom';
 
 function App() {
   const [animals, setAnimals] = useState([]);
   const [animalList, setAnimalList] = useState([]);
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null);
-  const [selectedAnimalIdForMore, setselectedAnimalIdForMore] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [rpp, setRpp] = useState(4);
   const [orderBy, setOrderBy] = useState('Name'); 
+  const [orderDirection, setOrderDirection] = useState('DESC'); 
+  const [animalName, setAnimalName] = useState(''); 
+  const [ageMin, setAgeMin] = useState(); 
+  const [ageMax, setAgeMax] = useState(); 
   
 
   useEffect(() => {
@@ -29,9 +29,11 @@ function App() {
     }
   }, [animals]);
 
+  
   useEffect(() => {
     axios
-      .get('http://localhost:5135/api/Animal/GetAllAnimals') 
+      .get('http://localhost:5135/api/Animal/GetAllAnimals', 
+        {params: {animalName, ageMin, ageMax}}) 
       .then(response => {
         let allAnimals = response.data; 
         setAnimalList(allAnimals)
@@ -39,23 +41,24 @@ function App() {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, [animals]);
+  }, [animals, animalName, ageMin, ageMax]);
 
   useEffect(() => {
     axios
-      .get('http://localhost:5135/api/Animal', {params: {orderBy, pageNumber, rpp}}) 
+      .get('http://localhost:5135/api/Animal', 
+        {params: {orderBy,orderDirection, animalName, ageMin, ageMax, pageNumber, rpp}}) 
       .then(response => {
         let animalData = response.data; 
+        if(animalData.length < 1) {
+          setAnimals([]); 
+        }
         setAnimals(animalData)
 
       })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, [animals,orderBy, pageNumber, rpp]);
-
-  
-  
+  }, [animals,orderBy,orderDirection, animalName,ageMin,ageMax, pageNumber, rpp]);
 
   const totalPages = Math.ceil(animalList.length / rpp);
   const handlePageChange = (direction) => {
@@ -65,19 +68,10 @@ function App() {
       setPageNumber(prev => prev - 1);
     }
   };
-  
-  const handleSelectAnimal = (id) => {
-    setSelectedAnimalId(id);
-  };
-  
-  const handleSelectedAnimalForMore = (id) => {
-    setselectedAnimalIdForMore(id);
-  };
 
-  const handleSelectLess = (id) => {
-    setselectedAnimalIdForMore(null);
-  };
-
+  const handleFilter = () => {
+    setPageNumber(1);
+  }
 
   return (
     <div>
@@ -86,18 +80,45 @@ function App() {
           <option value="Specise">Species</option>
           <option value="Age">Age</option>
       </select>
-      <AnimalTable animals={animals} setAnimals={setAnimals}  onSelectAnimal={handleSelectAnimal} onSelectMore={handleSelectedAnimalForMore} onSelectLess={handleSelectLess}/>
+      <select value={orderDirection} onChange={e => setOrderDirection(e.target.value)}>
+          <option value="DESC">Descending</option>
+          <option value="ASC">Ascending</option>
+      </select>
+      <div>
+        <input
+            name="name"
+            value={animalName}
+            onChange={e => {setAnimalName(e.target.value); handleFilter();}}
+            placeholder="Name"
+        />
+        <input
+            name="ageMin"
+            type="number"
+            value={ageMin}
+            onChange={e => {setAgeMin(e.target.value); handleFilter();}}
+            placeholder="Minimum age"
+            min="0"
+        />
+        <input
+            name="ageMax"
+            type="number"
+            value={ageMax}
+            onChange={e => {setAgeMax(e.target.value); handleFilter()}}
+            placeholder="Maximum age"
+            min="0"
+        />
+      </div>
+      <AnimalTable animals={animals}/>
       <div className="pagination">
         <button onClick={() => handlePageChange('prev')} disabled={pageNumber === 1}>Previous</button>
         <span> {pageNumber} - {totalPages}</span>
         <button onClick={() => handlePageChange('next')} disabled={pageNumber === totalPages}>Next</button>
       </div>
-      {selectedAnimalIdForMore && <AnimalCard animalId={selectedAnimalIdForMore} setSelectedAnimalId={setselectedAnimalIdForMore} />}
-      <AddAnimalForm animals={animals} setAnimals={setAnimals} />
-      {selectedAnimalId && <EditAnimalForm animalId={selectedAnimalId} animals={animals} setAnimals={setAnimals} setSelectedAnimalId={setSelectedAnimalId} />}
+      <Link to={`/add`}><button className='addAnimalForm'>Add Animals</button></Link>
     </div>
   );
   
 
 }
 export default App;
+

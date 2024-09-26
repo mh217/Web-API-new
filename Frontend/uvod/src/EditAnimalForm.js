@@ -1,7 +1,13 @@
+import './EditAnimalForm.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function EditAnimalForm({ animalId, animals, setAnimals, setSelectedAnimalId }) {
+
+function EditAnimalForm() {
+    const {animalId} = useParams(); 
+    const navigate = useNavigate();
     const [updatedAnimal, setUpdatedAnimal] = useState({
         name: '',
         species: '',
@@ -31,23 +37,19 @@ function EditAnimalForm({ animalId, animals, setAnimals, setSelectedAnimalId }) 
       }
 
     function handleUpdateAnimal(animalId, updatedAnimal) {
-        const updatedItem = animals.map((animal) => {
-          return animal.id === animalId ? updatedAnimal : animal;
-        });
-        
         axios.put(`http://localhost:5135/api/Animal/${animalId}`, updatedAnimal)
         .then(response => {
-            console.log('Update successfull', response)
-            setSelectedAnimalId(null);
+            alert('Animal Updated');
         })
         .catch(error => {
             console.log('Error:', error)
         })
-        setAnimals(updatedItem);
       }
 
     return (
-        <form onSubmit={handleEditFormSubmit}>
+        <>    
+        <button className='homeBTN' onClick={() => navigate('/')}>Back</button>   
+         <form onSubmit={handleEditFormSubmit}>
             <h2>UpdateAnimal</h2>
             <label>
                 Name:{' '}
@@ -78,6 +80,7 @@ function EditAnimalForm({ animalId, animals, setAnimals, setSelectedAnimalId }) 
             <br />
             <button className='submit' type="submit">Submit</button>
         </form>
+        </>
     );
 }
   

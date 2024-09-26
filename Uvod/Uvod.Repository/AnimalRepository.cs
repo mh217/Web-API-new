@@ -119,23 +119,57 @@ namespace Uvod.Repository
             }
         }
 
-        public async Task<List<Animal>> GetAllAnimalsAsync()
+        public async Task<List<Animal>> GetAllAnimalsAsync(AnimalFilter filter)
         {
             try
             {
                 List<Animal> animals = new List<Animal>();
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "SELECT * FROM \"Animal\";";
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("SELECT * FROM \"Animal\" a WHERE 1=1 ");
+                var command = new NpgsqlCommand();
+                command.Connection = connection;
 
-
-                var command = new NpgsqlCommand(commandText, connection);
+                if (filter != null)
+                {
+                    if (!(string.IsNullOrWhiteSpace(filter.NameQuery)))
+                    {
+                        stringBuilder.Append(" AND a.\"Name\" ILIKE @animalName  ");
+                        command.Parameters.AddWithValue("@animalName", StringExtension.AddStringBetween(filter.NameQuery));
+                    }
+                    if (!(string.IsNullOrWhiteSpace(filter.SpeciesQuery)))
+                    {
+                        stringBuilder.Append(" AND a.\"Specise\" ILIKE @species  ");
+                        command.Parameters.AddWithValue("@species", StringExtension.AddStringBetween(filter.SpeciesQuery));
+                    }
+                    if (filter.AgeMax != 0)
+                    {
+                        stringBuilder.Append(" AND a.\"Age\" <= @ageMax  ");
+                        command.Parameters.AddWithValue("@ageMax", filter.AgeMax);
+                    }
+                    if (filter.AgeMin != 0)
+                    {
+                        stringBuilder.Append(" AND a.\"Age\" >= @ageMin  ");
+                        command.Parameters.AddWithValue("@ageMin", filter.AgeMin);
+                    }
+                    if (filter.DateOfBirthMax != null)
+                    {
+                        stringBuilder.Append(" AND a.\"DateOfBirth\" < @dateMax ");
+                        command.Parameters.AddWithValue("@dateMax", filter.DateOfBirthMax);
+                    }
+                    if (filter.DateOfBirthMin != null)
+                    {
+                        stringBuilder.Append(" AND a.\"DateOfBirth\" > @dateMin  ");
+                        command.Parameters.AddWithValue("@ageMin", filter.DateOfBirthMin);
+                    }
+                }
+                command.CommandText = stringBuilder.ToString();
 
                 connection.Open();
 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                if (reader.HasRows)
-                {
+                
                     while (await reader.ReadAsync())
                     {
                         Animal animal = new Animal();
@@ -148,11 +182,6 @@ namespace Uvod.Repository
                         animals.Add(animal);
                     }
 
-                }
-                else
-                {
-                    return null;
-                }
                 return animals;
 
             }
@@ -197,12 +226,12 @@ namespace Uvod.Repository
                     }
                     if(filter.AgeMax != 0)
                     {
-                        stringBuilder.Append(" AND a.\"Age\" < @ageMax  ");
+                        stringBuilder.Append(" AND a.\"Age\" <= @ageMax  ");
                         command.Parameters.AddWithValue("@ageMax", filter.AgeMax);
                     }
                     if (filter.AgeMin != 0)
                     {
-                        stringBuilder.Append(" AND a.\"Age\" > @ageMin  ");
+                        stringBuilder.Append(" AND a.\"Age\" >= @ageMin  ");
                         command.Parameters.AddWithValue("@ageMin", filter.AgeMin);
                     }
                     if (filter.DateOfBirthMax != null)
@@ -227,8 +256,7 @@ namespace Uvod.Repository
                 connection.Open();
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                if (reader.HasRows)
-                {
+                
                     while (await reader.ReadAsync())
                     {
                         Animal animal = new Animal();
@@ -245,11 +273,7 @@ namespace Uvod.Repository
                         animal.Owner = owner;
                         animals.Add(animal);
                     }
-                }
-                else
-                {
-                    return null;
-                }
+                
                 return animals;
 
             }

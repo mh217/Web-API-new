@@ -1,17 +1,16 @@
 import axios from 'axios';
 import './AnimalTable.css';
+import { Link } from 'react-router-dom';
 
 
-function AnimalTable({ animals, setAnimals, onSelectAnimal, onSelectMore, onSelectLess }) {
+function AnimalTable({animals}) { 
 
-  function handleDelete(id) {
-    axios.delete('http://localhost:5135/api/Animal' + `/${id}`) 
-    .then(response => {
-      console.log(response)
-    }) 
-  }
-
-  
+    function handleDelete(id) {
+      axios.delete('http://localhost:5135/api/Animal' + `/${id}`) 
+      .then(response => {
+        console.log(response)
+      }) 
+    }
 
     return (
       <table>
@@ -35,8 +34,8 @@ function AnimalTable({ animals, setAnimals, onSelectAnimal, onSelectMore, onSele
                 <td>{animal.age}</td>
                 <td>{animal.owner ? `${animal.owner.firstName} ${animal.owner.lastName}` : "No Owner"}</td>
                 <td><button type="button" onClick ={() => handleDelete(animal.id)}>Delete</button></td>
-                <td><button type="edit" onClick ={() => onSelectAnimal(animal.id)}>Update</button></td>
-                <td><button type="more" onClick ={() => onSelectMore(animal.id)}>+</button> <button type="more" onClick ={() => onSelectLess(animal.id)}>-</button></td>
+                <td><Link to={`/update/${animal.id}`}><button type="edit">Update</button></Link></td>
+                <td><Link to={`/moreInfo/${animal.id}`}><button type="more">+</button></Link></td>
               </tr>
             );
         })}
